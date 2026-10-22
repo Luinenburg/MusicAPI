@@ -75,7 +75,7 @@ def collect_files(youtube_url: str):
     
     ydl_opts = {
         'writethumbnail': True,
-        'format': 'm4a/bestaudio/best',
+        'format': 'bestaudio/best',
         'cookiesfrombrowser': ('firefox', None, None, None),
         'forcethumbnail': True,
         'postprocessors': [
@@ -95,12 +95,7 @@ def collect_files(youtube_url: str):
         'embedmetadata': True,
         'embedthumbnail': True,
         'outtmpl': '%(title)s.%(ext)s',
-        'extractor-args': {
-            'youtube': {
-                'player_client': 'default',
-                'android_sdkless': True
-            }
-        }
+        'remote_components': ['ejs:npm'],
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
