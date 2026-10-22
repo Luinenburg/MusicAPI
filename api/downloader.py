@@ -30,11 +30,14 @@ def grab_from_file(filename: str):
 
 
 # Get to the directory ./[artist]/[album], making the directories if they don't exist yet
-def enter_album_directory(directories):
+def enter_album_directory(directories: list[str]):
     enter_absolute_directory(BASE_DIRECTORY)
     old_directory = BASE_DIRECTORY
 
     for directory in directories:
+        print(directory)
+        directory = directory.replace("/", " ")
+        directory = directory.replace("\\", " ")
         for filename in os.listdir():
             if filename == directory:
                 print(f"Entering existing directory for ({filename})")
@@ -96,6 +99,11 @@ def collect_files(youtube_url: str):
         'embedthumbnail': True,
         'outtmpl': '%(title)s.%(ext)s',
         'remote_components': ['ejs:npm'],
+        'extractor_args': {
+            'youtubetab': {
+                'skip': ['authcheck'],
+            },
+        },
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -114,7 +122,7 @@ def get_album_directory():
         print(file)
         if file.find(".mp3") == -1: continue
         metadata = TinyTag.get(file)
-        return [metadata.artist, metadata.album]
+        return [metadata.artist.split(',')[0].strip(), metadata.album]
     print("no .mp3 found")
     quit()
 
@@ -140,3 +148,4 @@ def download(youtube_url: str):
     album_dir = get_album_directory()
     clean_folder()
     enter_album_directory(album_dir)
+    os.removedirs(BASE_DIRECTORY+"/temp")
