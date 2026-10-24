@@ -5,3 +5,4 @@ tinytag
 dotenv
 uv
 deno
+ytmusicapi
