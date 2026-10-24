@@ -1,8 +1,8 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
-from api.downloader import download
+from downloader import download
 
-music_router = APIRouter(prefix="/music")
+music_router = APIRouter(prefix="/add_music")
 
 class SongList(BaseModel):
     songs: list[str]

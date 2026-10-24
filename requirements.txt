@@ -6,3 +6,4 @@ python-dotenv
 uv
 deno
 ytmusicapi
+requests
