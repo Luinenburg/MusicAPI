@@ -2,7 +2,8 @@ fastapi[standard]
 pydantic
 yt_dlp
 tinytag
-dotenv
+python-dotenv
 uv
 deno
 ytmusicapi
+requests
