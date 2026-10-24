@@ -1,0 +1,7 @@
+fastapi[standard]
+pydantic
+yt_dlp
+tinytag
+dotenv
+uv
+deno
