@@ -1,12 +1,13 @@
 from ytmusicapi import YTMusic, OAuthCredentials
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()
 
 CLIENT_ID = os.getenv("YT_TV_OAUTH_CLID")
 CLIENT_SECRET = os.getenv("YT_TV_OAUTH_CLSECRET")
 
-yt = YTMusic('browser.json')
+yt = YTMusic(str(Path(__file__).with_name("browser.json")))
 
 def search_artist_album(artist, album):
     results = []
