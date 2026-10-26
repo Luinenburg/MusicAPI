@@ -31,8 +31,8 @@ async def add_songs(song_list: SongList):
     """Add songs from a list"""
     results = []
     for song in song_list.songs:
-        if song.overwrite != None:
-            results.append(download(song.id, song.overwrite))
+        if song.overwrite == "true":
+            results.append(download(song.id, True))
         else:
             results.append(download(song.id, False))
     return {"status": "request complete", "individual_responses": results}
