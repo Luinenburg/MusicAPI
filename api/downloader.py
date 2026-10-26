@@ -3,6 +3,7 @@ import os
 from textwrap import fill
 from time import sleep
 import yt_dlp
+from yt_dlp.postprocessor.metadataparser import MetadataParserPP
 from tinytag import TinyTag
 from dotenv import load_dotenv
 load_dotenv()
@@ -30,7 +31,7 @@ def grab_from_file(filename: str):
 
 
 # Get to the directory ./[artist]/[album], making the directories if they don't exist yet
-def enter_album_directory(directories: list[str]):
+def enter_album_directory(directories: list[str], overwrite):
     enter_absolute_directory(BASE_DIRECTORY)
     old_directory = BASE_DIRECTORY
 
@@ -50,6 +51,10 @@ def enter_album_directory(directories: list[str]):
             enter_absolute_directory(old_directory)
         old_directory = os.getcwd()
     print(f"Current Directory: {os.getcwd()}\n")
+    if len(os.listdir()) > 0 and overwrite == False:
+        raise Exception("Directory is full")
+    else:
+        for file in os.listdir(): os.remove(file)
     move_out_of_temp(old_directory)
 
 
@@ -64,6 +69,7 @@ def goto_temp():
     print("Entering temp directory...")
     try:
         os.chdir("temp")
+        print(os.getcwd())
     except:
         print("Could not find temp. Making.")
         os.mkdir("temp")
@@ -72,32 +78,42 @@ def goto_temp():
 
 # Gets image jpg and downloads songs from youtube
 def collect_files(youtube_url: str):
-    goto_temp()
+    if not os.getcwd().split("/")[len(os.getcwd().split("/"))-1] == "temp":
+        goto_temp()
     for file in os.listdir():
         os.remove(file)
     
     ydl_opts = {
         'writethumbnail': True,
         'format': 'bestaudio/best',
-        'cookiesfrombrowser': ('firefox', None, None, None),
         'forcethumbnail': True,
         'postprocessors': [
+            {
+                'key': 'MetadataParser',
+                'actions': [(MetadataParserPP.Actions.INTERPRET, 'playlist_index', 'meta_track')],
+                'when': 'pre_process',
+            },
             {
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
                 'preferredquality': '192'
             },
             {
-                'key': 'FFmpegMetadata'
+                'key': 'FFmpegMetadata',
+                'add_metadata': True
             },
             {
                 'key': 'EmbedThumbnail'
-            },
+            }
+        ],
+        'parse_metadata' :
+        [
+            'playlist_index:meta_track'
         ],
         'forcetitle': True,
         'embedmetadata': True,
         'embedthumbnail': True,
-        'outtmpl': '%(title)s.%(ext)s',
+        'outtmpl': '%(playlist_index)s %(title)s.%(ext)s',
         'remote_components': ['ejs:npm'],
         'extractor_args': {
             'youtubetab': {
@@ -111,6 +127,12 @@ def collect_files(youtube_url: str):
             error_code = ydl.download(youtube_url)
         except PermissionError:
             print("Permission error encountered")
+            return 1
+        except yt_dlp.utils.ExtractorError:
+            print("Extraction error")
+            return 1
+        except yt_dlp.utils.DownloadError:
+            print("Download error")
             return 1
         if (error_code):
             print(f"fat ass {error_code}")
@@ -136,16 +158,18 @@ def clean_folder():
         os.remove(filename)
 
 
-def download(youtube_url: str):
-    failure = 1
+def download(youtube_url: str, overwrite=False):
+    failures = 0
     enter_absolute_directory(BASE_DIRECTORY)
-    while collect_files(youtube_url) == 1:
-        if failure == 1:
-            input("Press enter to try again...")
-            for file in os.listdir():
-                os.remove(file)
-        continue
+    failures += collect_files(youtube_url)
+    if failures != 0:
+        os.remove(BASE_DIRECTORY+"/temp")
+        return {"status": "Download failed"}
     album_dir = get_album_directory()
     clean_folder()
-    enter_album_directory(album_dir)
+    try:
+        enter_album_directory(album_dir, overwrite)
+    except:
+        return {"status": "Album already exists with files."}
     os.removedirs(BASE_DIRECTORY+"/temp")
+    return {"status": "Success", "path": album_dir, "url": youtube_url, "total_downloaded": len(os.listdir())}
