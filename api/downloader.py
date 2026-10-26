@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import shutil
 from textwrap import fill
 from time import sleep
 import yt_dlp
@@ -166,7 +167,8 @@ def download(youtube_url: str, overwrite=False):
     enter_absolute_directory(BASE_DIRECTORY)
     failures += collect_files(youtube_url)
     if failures != 0:
-        os.remove(BASE_DIRECTORY+"/temp")
+        os.chdir(BASE_DIRECTORY)
+        shutil.rmtree(os.path.join(BASE_DIRECTORY, "temp"), ignore_errors=True)
         return {"status": "Download failed"}
     album_dir = get_album_directory()
     clean_folder()
