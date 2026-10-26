@@ -61,7 +61,7 @@ def enter_album_directory(directories: list[str], overwrite):
 def move_out_of_temp(new_directory: str):
     for file in os.listdir(BASE_DIRECTORY+"/temp"):
         new_file = file
-        if new_file.endswith(".jpg"): new_file = cover.jpg
+        if new_file.endswith(".jpg"): new_file = "cover.jpg"
         print(f"Moving {BASE_DIRECTORY+"/temp/"+file}")
         os.replace(BASE_DIRECTORY+"/temp/"+file, new_directory+"/"+new_file)
         print(f"Now in {new_directory}")
@@ -171,7 +171,7 @@ def download(youtube_url: str, overwrite=False):
     clean_folder()
     try:
         enter_album_directory(album_dir, overwrite)
-    except:
-        return {"status": "Album already exists with files."}
+    except Exception as e:
+        return {"status": str(e)}
     os.removedirs(BASE_DIRECTORY+"/temp")
     return {"status": "Success", "path": album_dir, "url": youtube_url, "total_downloaded": len(os.listdir())}
