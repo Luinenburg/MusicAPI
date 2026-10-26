@@ -7,6 +7,13 @@ music_router = APIRouter(prefix="/add_music")
 class SongList(BaseModel):
     songs: list[str]
 
+class OverwriteSong(BaseModel):
+    id: str
+    overwrite: bool
+
+class OverwriteSongList(BaseModel):
+    songs: list[OverwriteSong]
+
 @music_router.post("/songs/")
 async def add_songs(song_list: SongList):
     """Add songs from a list"""
@@ -27,11 +34,11 @@ async def add_song(song: str):
     return {"status": status}
 
 @music_router.post("/songs/overwrite/")
-async def add_songs(song_list: SongList):
+async def add_songs(song_list: OverwriteSongList):
     """Add songs from a list"""
     results = []
     for song in song_list.songs:
-        if song.overwrite == "true":
+        if song.overwrite:
             results.append(download(song.id, True))
         else:
             results.append(download(song.id, False))
