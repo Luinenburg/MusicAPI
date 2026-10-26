@@ -4,3 +4,4 @@ songs
 *__pycache__*
 frontend/yt_export
 frontend/list.csv
+api/cookies.txt
