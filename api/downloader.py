@@ -60,8 +60,10 @@ def enter_album_directory(directories: list[str], overwrite):
 
 def move_out_of_temp(new_directory: str):
     for file in os.listdir(BASE_DIRECTORY+"/temp"):
+        new_file = file
+        if new_file.endswith(".jpg"): new_file = cover.jpg
         print(f"Moving {BASE_DIRECTORY+"/temp/"+file}")
-        os.replace(BASE_DIRECTORY+"/temp/"+file, new_directory+"/"+file)
+        os.replace(BASE_DIRECTORY+"/temp/"+file, new_directory+"/"+new_file)
         print(f"Now in {new_directory}")
 
 
