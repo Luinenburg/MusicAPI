@@ -15,9 +15,12 @@ def search_artist_album(artist, album):
         result = {}
         if search_result['resultType'] != 'album':
             continue
-        result['title'] = search_result['title']
-        result['artist'] = search_result['artists'][0]['name']
-        result['year'] = search_result['year']
-        result['playlistId'] = search_result['playlistId']
-        results.append(result)
+        try:
+            result['title'] = search_result['title']
+            result['artist'] = search_result['artists'][0]['name']
+            result['year'] = search_result['year']
+            result['playlistId'] = search_result['playlistId']
+            results.append(result)
+        except KeyError:
+            print(result)
     return results
