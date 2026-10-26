@@ -31,10 +31,10 @@ async def add_songs(song_list: SongList):
     """Add songs from a list"""
     results = []
     for song in song_list.songs:
-        if song["overwrite"] != None:
-            results.append(download(song["id"], song["overwrite"]))
+        if song.overwrite != None:
+            results.append(download(song.id, song.overwrite))
         else:
-            results.append(download(song["id"], False))
+            results.append(download(song.id, False))
     return {"status": "request complete", "individual_responses": results}
 
 @music_router.post("/song/overwrite/{song}")
