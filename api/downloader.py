@@ -86,7 +86,7 @@ def collect_files(youtube_url: str):
         os.remove(file)
     
     ydl_opts = {
-        'cookiefile': 'cookies.txt',
+        'cookiefile': os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cookies.txt'),
         'writethumbnail': True,
         'format': 'bestaudio/best',
         'forcethumbnail': True,
