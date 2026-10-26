@@ -2,3 +2,5 @@
 */.env
 songs
 *__pycache__*
+frontend/yt_export
+frontend/list.csv
